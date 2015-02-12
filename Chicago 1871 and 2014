@@ -1,0 +1,75 @@
+<head>
+ 
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Mapa</title>
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<link href="http://api.tiles.mapbox.com/mapbox.js/v1.5.0/mapbox.css" media="screen, print" rel="stylesheet">
+<script src="http://api.tiles.mapbox.com/mapbox.js/v1.5.0/mapbox.js"></script>
+<style type="text/css">
+/* paste CSS below this line */
+#map {
+  width:500px;
+  height:500px;
+}
+
+</style>
+</head>
+<body>
+<!-- paste HTML below this line -->
+<div id="map"></div>
+
+<script type="text/javascript">
+// paste JavaScript below this line
+// 1871 map attribution
+var attribution_1871 = 'Map image from Wikipedia';
+ 
+// 1871 tile set with attribution
+var chi_1871 = L.tileLayer(  'http://mapwarper.net/maps/tile/7917/{z}/{x}/{y}.png' , { attribution: attribution_1871 } );
+ 
+// 2014 tile set attribution
+var attribution_2014 = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, Imagery © <a href="http://mapbox.com">Mapbox</a>';
+ 
+// 2014 tile set using MapBox ID (replace with your own)
+var chi_2014 = L.tileLayer( 'https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png',{id: 'examples.map-20v6611k',attribution: attribution_2014});
+ 
+// create the map with the default the tileset
+var map = L.map('map', {layers:chi_1871});
+ 
+// create a variable to hold all tile sets and name them so we can use it for the toggler
+var baseMaps = {
+  "Chicago 2014": chi_2014,
+  "Chicago 1871": chi_1871
+};
+ 
+// add the tile set switcher control
+L.control.layers(baseMaps).addTo(map);
+
+// zoom and center on o'leary barn
+map.setView([41.869018, -87.640973], 14);
+
+// geojson goes here when sorted out
+var geodata = {"type":"FeatureCollection","features":[{"type":"Feature","properties":{"Name":"Mary Jones' House","Address":"174 Jackson Street","Why Important":"Mary Jones lives here upon her return to Chicago."},"geometry":{"type":"Point","coordinates":[-87.633393,41.878355]}},{"type":"Feature","properties":{"Name":"O'Leary Property","Address":"DeKoven Street","Why Important":"Where the Chicago Fire started."},"geometry":{"type":"Point","coordinates":[-87.640973,41.869018]}},{"type":"Feature","properties":{"Name":"Old Saint Mary's Church","Address":"edit","Why Important":"Many people took refuge in the church the night of the fire."},"geometry":{"type":"Point","coordinates":[-87.625902,41.870504]}},{"type":"Feature","properties":{"Name":"Mary Jones' Shop","Address":"Washinton Street and Wabash Street","Why Important":"This is where Mary Jones had her shop.  It is one of many buildings destroyed during the Chicago Fire."},"geometry":{"type":"Point","coordinates":[-87.625966,41.883159]}},{"type":"Feature","properties":{"Name":"Customers of Mary Jones","Address":"Lakeshore Drive","Why Important":"Many of Mary Jones' customers lived like aristocrats in their homes along Lakeshore Drive."},"geometry":{"type":"Point","coordinates":[-87.617254,41.878317]}}]}
+ 
+// now make it understandable by leaflet
+var geolayer = L.geoJson(geodata, {onEachFeature: showPopup});
+ 
+// add the points to the map
+geolayer.addTo(map);
+ 
+// zoom the map to the bounds of the points
+map.fitBounds(geolayer.getBounds());
+
+// make the popup box
+function showPopup(feature, layer) {
+  var key, val;
+  var content = [];
+  for (key in feature.properties) {
+    val = feature.properties[key];
+    content.push("<strong>" + key + ":</strong> " + val);
+  }
+  layer.bindPopup(content.join("<br />"));
+}
+
+</script>
+</body>
+</html>
